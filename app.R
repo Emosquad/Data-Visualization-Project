@@ -39,8 +39,20 @@ ui <- dashboardPage(
               plotOutput("plot3")
       ),
       tabItem(tabName = "page4",
-              leafletOutput("myMap", width="100%")
-      ),
+              splitLayout(
+                cellWidths = c("25%", "75%"),
+                checkboxInput("Agg", label = "Show Overlay", value = FALSE),
+                sliderInput(
+                  "date",
+                  "Date:",
+                  min = as.Date("2022/03/06", "%Y/%m/%d"),
+                  max = as.Date("2022/05/31", "%Y/%m/%d"),
+                  value = as.Date("2022/03/06", "%Y/%m/%d"),
+                  step = 1,
+                  animate = animationOptions(interval = 2000, loop = FALSE)
+                )),
+                leafletOutput("myMap", width = "100%")
+              ), 
       tabItem(tabName = "page5",
               dataTableOutput("myTable1")
       ),
@@ -129,8 +141,58 @@ server <- function(input, output, session){
     
   })
   
-  output$map1 = renderLeaflet({
-    
+  output$myMap = renderLeaflet({
+    if(input$Agg == TRUE) {
+      loc_data = df_ind %>%
+        filter(as.Date(Date, '%Y-%m-%d') <= input$date) %>%
+        na.omit() %>%
+        group_by(lng = round(Longtitude, 3), lat = round(Latitude, 3)) %>%
+        summarise(N = n()) %>%
+        mutate(latL = lat - 0.0005) %>%
+        mutate(latH = lat + 0.0005) %>%
+        mutate(lngL = lng - 0.0005) %>%
+        mutate(lngH = lng + 0.0005)
+      
+      m = m = loc_data %>% leaflet() %>% addTiles() %>%
+        setView(121.5, 31.2, zoom = 10) %>%
+        addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+        addLayersControl(baseGroups = c("Toner", "OSM"),
+                         options = layersControlOptions(collapsed = FALSE)) %>%
+        addRectangles(
+          lng1 =  loc_data$lngL,
+          lat1 =  loc_data$latL,
+          lng2 =  loc_data$lngH,
+          lat2 =  loc_data$latH,
+          fillOpacity = loc_data$N / 150,
+          fillColor = "red",
+          label = loc_data$N
+        )
+    }else {
+      loc_data = df_ind %>%
+        filter(as.Date(Date, '%Y-%m-%d') == input$date) %>%
+        na.omit() %>%
+        group_by(lng = round(Longtitude, 3), lat = round(Latitude, 3)) %>%
+        summarise(N = n()) %>%
+        mutate(latL = lat - 0.0005) %>%
+        mutate(latH = lat + 0.0005) %>%
+        mutate(lngL = lng - 0.0005) %>%
+        mutate(lngH = lng + 0.0005)
+      
+      m = loc_data %>% leaflet() %>% addTiles() %>%
+        setView(121.5, 31.2, zoom = 10) %>%
+        addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+        addLayersControl(baseGroups = c("Toner", "OSM"),
+                         options = layersControlOptions(collapsed = FALSE))%>%
+        addRectangles(
+          lng1 =  ~ lngL,
+          lat1 =  ~ latL,
+          lng2 =  ~ lngH,
+          lat2 =  ~ latH,
+          fillOpacity = ~ N / 150,
+          fillColor = "red",
+          label = ~ N
+        )
+    }
     
   })
   

@@ -4,6 +4,11 @@ library(comprehenr)
 library(readxl)
 library(purrr)
 library(stringr)
+library(shiny)
+library(shinydashboard)
+library(leaflet)
+library(plotly)
+library(DT)
 
 date_range = 1:124 + as.Date("2022-02-26")
 date_str = c()
@@ -56,4 +61,52 @@ for (s in 8:94) {
     mutate(Î³¶È = as.numeric(Î³¶È))
   df_ind <- dplyr::bind_rows(df_ind, df_seperate)
 }
+
+
+loc_data = df_ind %>%
+  filter(as.Date(Date, '%Y-%m-%d') == as.Date("2022/03/06", "%Y/%m/%d")) %>%
+  na.omit() %>%
+  group_by(lng = round(Longtitude, 3), lat = round(Latitude, 3)) %>%
+  summarise(N = n()) %>%
+  mutate(latL = lat - 0.0005) %>%
+  mutate(latH = lat + 0.0005) %>%
+  mutate(lngL = lng - 0.0005) %>%
+  mutate(lngH = lng + 0.0005)
+
+m = loc_data %>% leaflet() %>% addTiles() %>%
+  setView(121.5, 31.2, zoom = 10) %>%
+  addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+  addLayersControl(baseGroups = c("Toner", "OSM"),
+                   options = layersControlOptions(collapsed = FALSE))%>%
+  addRectangles(
+    lng1 =  ~ lngL,
+    lat1 =  ~ latL,
+    lng2 =  ~ lngH,
+    lat2 =  ~ latH,
+    fillOpacity = ~ N / 150,
+    fillColor = "red",
+    label = ~ N
+  )
+
+loc_data = df_ind %>%
+  filter(as.Date(Date, '%Y-%m-%d') == as.Date("2022/03/09", "%Y/%m/%d")) %>%
+  na.omit() %>%
+  group_by(lng = round(Longtitude, 3), lat = round(Latitude, 3)) %>%
+  summarise(N = n()) %>%
+  mutate(latL = lat - 0.0005) %>%
+  mutate(latH = lat + 0.0005) %>%
+  mutate(lngL = lng - 0.0005) %>%
+  mutate(lngH = lng + 0.0005)
+
+m = m %>% addRectangles(
+  lng1 =  loc_data$lngL,
+  lat1 =  loc_data$latL,
+  lng2 =  loc_data$lngH,
+  lat2 =  loc_data$latH,
+  fillOpacity = loc_data$N / 150,
+  fillColor = "red",
+  label = loc_data$N
+)
+
+m
 
