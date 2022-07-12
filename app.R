@@ -42,12 +42,26 @@ ui <- dashboardPage(
               plotOutput("plot2")
       ),
       tabItem(tabName = "page3",
-              plotOutput("plot3")
+              tabItem(tabName = "page2",
+                      selectInput("select", label = "District:", choices = list("JiaDing District" ="嘉定", "FengXian District"="奉贤",
+                                                                                "BaoShan District"="宝山", "ChongMing District"="崇明",
+                                                                                "XuHui District"="徐汇","PuTuo District"="普陀",
+                                                                                "YangPu District"="杨浦","SongJiang District"="松江",
+                                                                                "PuDong District"="浦东","HongKou District"="虹口",
+                                                                                "JingShan District"="金山","ChangNing District"="长宁",
+                                                                                "MinHang District"="闵行","QingPu District"="青浦",
+                                                                                "JingAn District"="静安","HuangPu District"="黄浦"
+                      ), selected = 1),
+                      hr(),
+                      fluidRow(column(9,plotlyOutput("plot3")
+                      ))
+                      
+              ),
       ),
       tabItem(tabName = "page4",
               splitLayout(
                 cellWidths = c("25%", "75%"),
-                checkboxInput("Cumulative", label = "Show Overlay", value = FALSE),
+                checkboxInput("Agg", label = "Show Cumulative map", value = FALSE),
                 sliderInput(
                   "date",
                   "Date:",
@@ -181,7 +195,18 @@ server <- function(input, output, session){
   })
   
   output$plot3 = renderPlotly({
-    
+    pos=df_district %>%
+      filter(df_district$Districts == input$select) %>%
+      ggplot(mapping = aes(x=Date, y=Positive))+
+      geom_line(color="tomato2")+
+      coord_cartesian(ylim = c(0,400))+
+      annotate("text", x=as.POSIXct(0.00, origin = "2022-06-18"),y=200,label=input$select,color="grey",size=12)+
+      labs(
+        title = "Positive Trend By Districts 2022")+
+      theme(axis.ticks.y = element_blank(), 
+            panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+            panel.background = element_blank())
+    ggplotly(pos)
     
   })
   
