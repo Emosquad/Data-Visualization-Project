@@ -14,6 +14,7 @@ ui <- dashboardPage(
   dashboardHeader(title = "Shanghai COVID-19 Lockdown in 2022"),
   dashboardSidebar(sidebarMenu(
     width = 350,
+    menuItem("Overview",tabName="intro",icon = icon("info")),
     menuItem("COVID-19 Trend", tabName = "page1", icon = icon("chart-area")),
     menuItem("Statistics", icon = icon("server"),
              menuSubItem("Trend by Districts", tabName = "page2"),
@@ -26,6 +27,57 @@ ui <- dashboardPage(
   )),
   dashboardBody(
     tabItems(
+      tabItem(tabName='intro',
+              fluidRow(
+                column(width = 12,
+                       box(
+                         title = "Introduction of Emo Squad project", width = NULL, solidHeader=TRUE, status = "primary",align="center",
+                         HTML('<center><img src="shanghai.jpg" width = "800"></center>')),
+                       box(
+                         title = "New Omicron Variant Found in China, Shanghai Carries Out New Rounds of Covid-19 Testing", width = NULL, solidHeader=TRUE, status = "primary",align="center",
+                         HTML(
+                           '<iframe width="65%" height="300"
+                  src="https://www.youtube.com/embed/nmIJXUV8WCw"
+                  frameborder="0" allowfullscreen></iframe>'
+                         )),
+                       box(
+                         title= "Motivation", width = NULL, solidHeader=TRUE,  status = "primary",
+                         "Since the first discovery of the Covid-19 in 2019, there have been many mutations. 
+                         The Omicron variant has the characteristics of a relatively hidden transmission path, 
+                         a long, incubation period, and a high asymptomatic infection rate. Since March 2022, 
+                         the Omicron variant has been on the rise. As a mega city and the largest urban economy of China, 
+                         Shanghai has severe and complicated forms of epidemic prevention and control and 
+                         experienced a two-month rigid lockdown from the beginning of April to the end of May. 
+                         The full-scale lockdown of Shanghai severely harmed the economy and strained the nerves 
+                         and affected livelihoods of its 25 million residents and eroded the public鈥檚 trust in authorities. 
+                         Moreover, it will have far-reaching economic and social costs. 
+                         As the arrival of BA.5 coronavirus variants, Shanghai fears the second lockdown as 
+                         Chinese government battles BA.5 outbreaks. Our Project aims to collect the specialized datasets of 
+                         2022 Shanghai COVID pandemic and provides data support for understanding the epidemic situation, 
+                         controlling, and predicting the epidemic situation."
+                       ),
+                       box(
+                         title= "Data Source",
+                         width = NULL, solidHeader=TRUE, status="primary",
+                         "Our datasets are retrieved from Model Whale website and contain epidemic data based on city, districts and individuals.",br(),
+                         
+                         a("Navigate to Model Whale",href="https://www.heywhale.com/auth/login?redirect=%2Fmw%2Fworkspace%2Findex", targets="_blank")
+                       ),
+                       box(
+                         title= "Main Content",
+                         width = NULL, solidHeader=TRUE, status="primary",
+                         "1. Covid-19 Trend: A plot of confirmed cases and asymptomatic cases trend based on the two-month data.",br(),
+                         "2. Statistics: A plot of confirmed cases and asymptomatic cases based on different districts.", br(),
+                         "3. Map of Test Positive: An interactive heat map of Covid cases distribution based on different locations in the map of Shanghai, 
+                         and visualization of severity of the covid situation based on colors.",br(),
+                         "4. Data: Raw datasets."
+                       ),
+                       box(title= "Team",width=NULL, solidHeader=TRUE, status = "primary",
+                           "member1, member2, member3")
+                )
+                
+                
+              )),
       tabItem(
         tabName = "page1",
         checkboxGroupInput("checkGroup", label = "Select the graph",
@@ -82,7 +134,7 @@ ui <- dashboardPage(
       tabItem(tabName = "page7",
               dataTableOutput("myTable3")
       )
-    
+      
     )
     
   )
@@ -133,7 +185,7 @@ server <- function(input, output, session){
   df_ind = df_ind %>%
     mutate(经度 = as.numeric(经度)) %>%
     mutate(纬度 = as.numeric(纬度))
-  for (s in 8:94) {
+  for (s in 9:94) {
     file_name = paste0(path,date_str[s],"_geo.xlsx")
     df_seperate = read_xlsx(file_name)
     df_seperate$性别 <- NULL
