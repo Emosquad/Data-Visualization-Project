@@ -26,14 +26,20 @@ ui <- dashboardPage(
   )),
   dashboardBody(
     tabItems(
-      tabItem(tabName = "page1",
-              checkboxInput("holiday", label = "Show holidays", value = FALSE),
-              plotlyOutput("plot2", height = 500)
+      tabItem(
+        tabName = "page1",
+        checkboxGroupInput("checkGroup", label = "Select the graph",
+                           choices = list(
+                             "Positive" = 1,
+                             "Asymptomatic" = 2
+                           ),
+                           selected = 1),
+        plotlyOutput("plot1", height = 500)
       ),
       tabItem(tabName = "page2",
               sliderInput("year", "Year:", min = 2014, max = 2020, value = 1, 
                           step = 1, animate = animationOptions(interval = 2000, loop = FALSE)),
-              plotOutput("plot1")
+              plotOutput("plot2")
       ),
       tabItem(tabName = "page3",
               plotOutput("plot3")
@@ -41,7 +47,7 @@ ui <- dashboardPage(
       tabItem(tabName = "page4",
               splitLayout(
                 cellWidths = c("25%", "75%"),
-                checkboxInput("Agg", label = "Show Overlay", value = FALSE),
+                checkboxInput("Cumulative", label = "Show Overlay", value = FALSE),
                 sliderInput(
                   "date",
                   "Date:",
@@ -127,6 +133,44 @@ server <- function(input, output, session){
   colnames(df_ind) <- c('Date', 'Address', 'Districts', 'Longtitude', 'Latitude')
   
   output$plot1 = renderPlotly({
+    Sys.setlocale("LC_TIME","English")
+    df_city$Date = as.Date(df_city$Date, format = "d%m%Y")
+    
+    
+    if(!is.null(input$checkGroup)){
+    if (length(input$checkGroup) == 1 & as.numeric(input$checkGroup)==1) {
+      p = ggplot(data = df_city, aes(x = Date, y = Positive)) + geom_area(fill =
+                                                                            "#F08080") +
+        scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
+        labs(title = "COVID-19 Trend in Shanghai City 2022",
+             y = "Positive") +
+        theme_classic()
+    }
+    
+    else if(length(input$checkGroup) == 1 & as.numeric(input$checkGroup)==2){
+      p = ggplot(data = df_city, aes(x = Date, y = Asymptomatic)) +
+        geom_area(fill = "#FFAFCC") +
+        labs(title = "COVID-19 Trend in Shanghai City 2022",
+             y = "Asymptomatic") +
+        scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
+        theme_classic()
+    }
+    
+    else if(length(input$checkGroup) == 2){
+      p = ggplot(data = df_city, aes(x = Date, y = Asymptomatic)) +
+        geom_area(fill = "#FFAFCC") +
+        labs(title = "COVID-19 Trend in Shanghai City 2022",
+             y = "Asymptomatic") +
+        theme_classic()
+      p = p + geom_area(data = df_city, aes(x = Date, y = Positive), fill =
+                          "#F08080") +
+        scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
+        labs(y = "Total")
+    }
+    }
+    else {
+      
+    }
     
     
   }) 
