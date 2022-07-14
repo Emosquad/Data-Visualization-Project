@@ -10,99 +10,179 @@ library(leaflet)
 library(plotly)
 library(DT)
 
-ui <- dashboardPage(
-  dashboardHeader(title = "Shanghai COVID-19 Lockdown in 2022",titleWidth = 280),
-  dashboardSidebar(width=280,sidebarMenu(
-    width = 280,
-    menuItem("Overview",tabName="intro",icon = icon("info-circle")),
-    menuItem("COVID-19 Trend", tabName = "page1", icon = icon("chart-area")),
-    menuItem("Statistics", icon = icon("server"),
-             menuSubItem("Trend by Districts", tabName = "page2"),
-             menuSubItem("Asympotomatic Trend by Districts", tabName = "page3")),
-    menuItem("Maps", icon = icon("globe"),
-             menuSubItem("Dot Map", tabName = "page4"),
-             menuSubItem("Interactive Map", tabName = "page8")),
-    menuItem("Data", icon = icon("database"),
-             menuSubItem("Data of City", tabName = "page5"),
-             menuSubItem("Data of Districts", tabName = "page6"),
-             menuSubItem("Data of Individuals", tabName = "page7"))
-  )),
-  dashboardBody(
-    tabItems(
-      tabItem(tabName='intro',
-              fluidRow(
-                column(width = 12,
-                       box(
-                         title = "New Omicron Variant Found in China, Shanghai Carries Out New Rounds of Covid-19 Testing", width = NULL, status="primary",solidHeader=TRUE,collapsible = TRUE,align="center",
-                         HTML(
-                           '<iframe width="65%" height="300"
+ui <- dashboardPage(skin="black",
+                    dashboardHeader(title = tags$strong("Shanghai COVID-19 Lockdown in 2022"),titleWidth = 280),
+                    dashboardSidebar(width=280,sidebarMenu(
+                      width = 280,
+                      menuItem("Overview",tabName="intro",icon = icon("info-circle")),
+                      menuItem("COVID-19 Trend", tabName = "page1", icon = icon("chart-area")),
+                      menuItem("Statistics", icon = icon("server"),
+                               menuSubItem("Trend by Districts", tabName = "page2"),
+                               menuSubItem("Asympotomatic Trend by Districts", tabName = "page3")),
+                      menuItem("Maps", icon = icon("globe"),
+                               menuSubItem("Dot Map", tabName = "page4"),
+                               menuSubItem("Interactive Map", tabName = "page8")),
+                      menuItem("Data", icon = icon("database"),
+                               menuSubItem("Data of City", tabName = "page5"),
+                               menuSubItem("Data of Districts", tabName = "page6"),
+                               menuSubItem("Data of Individuals", tabName = "page7")),
+                      menuItem("Source Code for App", icon = icon("send", lib='glyphicon'), href = "https://github.com/Emosquad/Data-Visualization-Project")
+                    )),
+                    dashboardBody(
+                      tags$head(tags$style(HTML('
+                                /* logo */
+                                .skin-black .main-header .logo {
+                                background-color: #8C92AC;
+                                }
+                                
+                                /* logo when hovered */
+                                .skin-black .main-header .logo:hover {
+                                background-color: #8C92AC;
+                                }
+                                
+                                /* navbar (rest of the header) */
+                                .skin-black .main-header .navbar {
+                                background-color:#8C92AC;
+                                }
+                                
+                                /* main sidebar */
+                                .skin-black .main-sidebar {
+                                background-color: #494E65;
+                                }
+                                
+                                /* active selected tab in the sidebarmenu */
+                                .skin-black .main-sidebar .sidebar .sidebar-menu .active a{
+                                background-color: #A7ABBF;
+                                }
+                                
+                                /* other links in the sidebarmenu */
+                                .skin-black .main-sidebar .sidebar .sidebar-menu a{
+                                background-color: #494E65;
+                                color: #DCDEE6;
+                                }
+                                
+                                /* other links in the sidebarmenu when hovered */
+                                .skin-black .main-sidebar .sidebar .sidebar-menu a:hover{
+                                background-color: #8C92AC;
+                                }
+                                /* toggle button when hovered  */
+                                .skin-black .main-header .navbar .sidebar-toggle:hover{
+                                background-color: #8C92AC;
+                                }
+
+                                /* body */
+                                .content-wrapper, .right-side {
+                                background-color: #A7ABBF;
+                                }')),
+                                
+                                tags$style(HTML(".box.box-solid.box-primary>.box-header {color:#fff;
+              background:#494E65
+                    }
+                    .box.box-solid.box-primary{
+                    border-bottom-color:#494E65;
+                    border-left-color:#494E65;
+                    border-right-color:#494E65;
+                    border-top-color:#494E65;
+                    background:#A7ABBF}
+                              "))),
+                      tabItems(
+                        tabItem(tabName='intro',
+                                fluidRow(
+                                  column(width = 12,
+                                         
+                                         
+                                         box(
+                                           title = tags$strong("New Omicron Variant Found in China, Shanghai Carries Out New Rounds of Covid-19 Testing"), status="primary",width = NULL,solidHeader=TRUE,collapsible = TRUE,align="center",
+                                           HTML(
+                                             '<iframe width="65%" height="300"
                   src="https://www.youtube.com/embed/nmIJXUV8WCw"
                   frameborder="0" allowfullscreen></iframe>'
-                         )),
-                       box(
-                         title= "Introduction", width = NULL, solidHeader=TRUE,status = "primary",collapsible = TRUE,
-                         div(img(src="SH1.jpg",height=250,width=450), style="text-align: center;"),br(),
-                         tags$div("Since the first discovery of the Covid-19 in 2019, there have been many mutations. 
+                                           )),
+                                         box(
+                                           title= tags$strong("Introduction"), status="primary",width = NULL, solidHeader=TRUE,collapsible = TRUE,
+                                           column(6,br(),
+                                                  div(img(src="SH1.jpg",height=300,width=450), style="margin-left: auto;")),
+                                           column(6,
+                                                  tags$span("Since the first discovery of the Covid-19 in 2019, there have been many mutations. 
                          The Omicron variant has the characteristics of a ",tags$strong("relatively hidden transmission path, 
                          a long incubation period, and a high asymptomatic infection rate"),". Since March 2022, 
                          the Omicron variant has been on the rise. As a mega city and the largest urban economy of China, 
                          Shanghai has severe and complicated forms of epidemic prevention and control and 
                          experienced a ",tags$strong("two-month rigid lockdown"), "from the beginning of April to the end of May. 
                          The full-scale lockdown of Shanghai severely harmed the economy and strained the nerves 
-                         and affected livelihoods of its 25 million residents and eroded the public's trust in authorities. 
+                         and affected livelihoods of its 25 million residents and eroded the public’s trust in authorities. 
                          Moreover, it will have far-reaching economic and social costs. 
                          As the arrival of BA.5 coronavirus variants, Shanghai fears the second lockdown as 
                          Chinese government battles BA.5 outbreaks. Our Project aims to collect the specialized datasets of 
-                         2022 Shanghai COVID pandemic and provides data support for understanding the epidemic situation, 
-                         controlling, and predicting the epidemic situation.",style = "font-size:15px")
-                         
-                         
-                       ),
-                       box(
-                         title= "Data Source",
-                         width = NULL, solidHeader=TRUE, status = "primary",collapsible = TRUE,
-                         tags$div("Our datasets are retrieved from",tags$strong("Model Whale"), "website and contain epidemic data based on city, districts and individuals.",style="font-size:15px"),br(),
-                         
-                         a("Navigate to Model Whale",href="https://www.heywhale.com/auth/login?redirect=%2Fmw%2Fworkspace%2Findex", targets="_blank")
-                       ),
-                       box(
-                         title= "Main Content",
-                         width = NULL, solidHeader=TRUE, status = "primary",collapsible = TRUE,
-                         tags$span(tags$li(tags$strong("Covid-19 Trend:"),"A plot of confirmed cases and asymptomatic cases trend based on the two-month data."),br(),
-                                   tags$li(tags$strong("Statistics:"),"A plot of confirmed cases and asymptomatic cases based on different districts."), br(),
-                                   tags$li(tags$strong("Map of Test Positive:"), "An interactive heat map of Covid cases distribution based on different locations in the map of Shanghai, 
-                                  and visualization of severity of the covid situation based on colors."),br(),
-                                   tags$li(tags$strong("Data:"), "Raw datasets."),style="font-size:16px")
-                       ),
-                       box(title= "Team",width=NULL, solidHeader=TRUE, status = "primary",collapsible = TRUE,
-                           tags$div(tags$strong("Our team members are all from MSBA program at Carey Business School, Johns Hopkins University:"), style = "font-size:15px"),br(),
-                           tags$li(tags$strong("Member 1: Jialu Ni - jni15@jh.edu")),br(),
-                           tags$li(tags$strong("Member 2: Yifan Wu - wuyifan2017@gmail.com")),br(),
-                           tags$li(tags$strong("Member 3: Yijia Wu - wuyifan2017@gmail.com")),br(),
-                           tags$li(tags$strong("Member 4: Yiming Ding - yding56@jh.edu")),br(),
-                           tags$li(tags$strong("Member 5: Zihui Chen - zchen109@jh.edu")),br(),
-                           tags$div("Feel free to contact us via email if you have any concerns related to this web.", style = "font-size:15px")
-                       )
-                )
-                
-                
-              )),
-      tabItem(
-        tabName = "page1",
-        checkboxGroupInput("checkGroup", label = "Select the graph",
-                           choices = list(
-                             "Positive" = 1,
-                             "Asymptomatic" = 2
-                           ),
-                           selected = 1),
-        plotlyOutput("plot1", height = 500)
-      ),
+                         2022 Shanghai COVID pandemic and provides data support for",tags$strong("understanding, 
+                         controlling, and predicting the epidemic situation."),style = "font-size:15px"))
+                                           
+                                           
+                                         ),
+                                         box(
+                                           title= tags$strong("Data Source"),
+                                           width = NULL, status="primary",solidHeader=TRUE, collapsible = TRUE,
+                                           tags$div("Our datasets are retrieved from",tags$strong("Model Whale"), "website and contain epidemic data based on city, districts and individuals.",style="font-size:15px"),
+                                           
+                                           a("Navigate to Model Whale",href="https://www.heywhale.com/auth/login?redirect=%2Fmw%2Fworkspace%2Findex", targets="_blank")
+                                         ),
+                                         box(
+                                           title= tags$strong("Main Content"),
+                                           width = NULL, status="primary",solidHeader=TRUE,collapsible = TRUE,
+                                           tags$span(tags$li(tags$strong("Covid-19 Trend:"),"A plot of confirmed cases and asymptomatic cases trend based on the two-month data."),
+                                                     tags$li(tags$strong("Statistics:"),"A plot of confirmed cases and asymptomatic cases based on different districts."),
+                                                     tags$li(tags$strong("Map of Test Positive:"), "An interactive heat map of Covid cases distribution based on different locations in the map of Shanghai, 
+                                  and visualization of severity of the covid situation based on colors."),
+                                                     tags$li(tags$strong("Data:"), "Raw datasets."),style="font-size:15px")
+                                         ),
+                                         box(title= tags$strong("Team"),status="primary",width=NULL, solidHeader=TRUE, collapsible = TRUE,
+                                             
+                                             valueBox("Jialu Ni","jni15@jh.edu",width=4,icon=icon("contact-card",lib = "glyphicon"),color="olive"),
+                                             valueBox("Yifan Wu","wuyifan2017@gmail.com",width=4,icon=icon("contact-card",lib = "glyphicon"),color="maroon"),
+                                             valueBox("Yijia Wu","ywu214@jh.edu",width=4,icon=icon("contact-card",lib = "glyphicon"),color="purple"),
+                                             valueBox("Yiming Ding","yding56@jh.edu",width=4,icon=icon("contact-card",lib = "glyphicon"),color="orange"),
+                                             valueBox("Zihui Chen","zchen109@jh.edu",width=4,icon=icon("contact-card",lib = "glyphicon"),color="light-blue"),br(),
+                                             tags$div(tags$strong("Our team members are all from MSBA program at Carey Business School, Johns Hopkins University."), style = "font-size:15px"),
+                                             
+                                             
+                                             
+                                             tags$div("Feel free to contact us via email if you have any concerns related to this App.", style = "font-size:15px")
+                                         )
+                                  )
+                                  
+                                  
+                                )),
+                        tabItem(tabName = "page1",
+                                fluidRow(column(
+                                  12,box(title= tags$strong("COVID-19 Trend in Shanghai City 2022"),
+                                         width = NULL,
+                                         solidHeader = TRUE,
+                                         status = "primary",
+                                         collapsible = TRUE,
+                                         
+                                         prettyCheckboxGroup(
+                                           inputId = "checkGroup",
+                                           label = h3(tags$strong("Select the Graph",style="font-size:16px")),
+                                           choices = list("Positive" = 1,
+                                                          "Asymptomatic" = 2),
+                                           icon = icon("times"),
+                                           animation = "tada",
+                                           selected = c(1, 2)
+                                         ),
+                                         plotlyOutput("plot1", height = 500)
+                                         
+                                  )))
+                                ,
+                                fluidRow(box(title = tags$strong("Rates and Counts"),
+                                             width = NULL,
+                                             solidHeader = TRUE,
+                                             status = "primary",
+                                             collapsible = TRUE,
+                                             column(6,
+                                                    plotlyOutput("plot1.2", height = 300)),
+                                             column(6,
+                                                    plotlyOutput("plot1.3", height = 300))))),
       tabItem(tabName = "page2",
-              sliderInput("year", "Year:", min = 2014, max = 2020, value = 1, 
-                          step = 1, animate = animationOptions(interval = 2000, loop = FALSE)),
-              plotOutput("plot2")
-      ),
-      tabItem(tabName = "page3",
               tabItem(tabName = "page2",
                       selectInput("select", label = "District:", choices = list("JiaDing District" ="嘉定", "FengXian District"="奉贤",
                                                                                 "BaoShan District"="宝山", "ChongMing District"="崇明",
@@ -114,10 +194,15 @@ ui <- dashboardPage(
                                                                                 "JingAn District"="静安","HuangPu District"="黄浦"
                       ), selected = 1),
                       hr(),
-                      fluidRow(column(9,plotlyOutput("plot3")
+                      fluidRow(column(9,plotlyOutput("plot2")
                       ))
                       
               ),
+              
+      ),
+      tabItem(tabName = "page3",
+              plotOutput("plot3")
+              
       ),
       tabItem(tabName = "page4",
                 sliderInput(
@@ -223,36 +308,37 @@ server <- function(input, output, session){
     df_city$Date = as.Date(df_city$Date, format = "d%m%Y")
     
     
-    if(!is.null(input$checkGroup)){
-    if (length(input$checkGroup) == 1 & as.numeric(input$checkGroup)==1) {
-      p = ggplot(data = df_city, aes(x = Date, y = Positive)) + geom_area(fill =
-                                                                            "#F08080") +
-        scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
-        labs(title = "COVID-19 Trend in Shanghai City 2022",
-             y = "Positive") +
-        theme_classic()
-    }
-    
-    else if(length(input$checkGroup) == 1 & as.numeric(input$checkGroup)==2){
-      p = ggplot(data = df_city, aes(x = Date, y = Asymptomatic)) +
-        geom_area(fill = "#FFAFCC") +
-        labs(title = "COVID-19 Trend in Shanghai City 2022",
-             y = "Asymptomatic") +
-        scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
-        theme_classic()
-    }
-    
-    else if(length(input$checkGroup) == 2){
-      p = ggplot(data = df_city, aes(x = Date, y = Asymptomatic)) +
-        geom_area(fill = "#FFAFCC") +
-        labs(title = "COVID-19 Trend in Shanghai City 2022",
-             y = "Asymptomatic") +
-        theme_classic()
-      p = p + geom_area(data = df_city, aes(x = Date, y = Positive), fill =
-                          "#F08080") +
-        scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
-        labs(y = "Total")
-    }
+    if(!is.null(input$checkGroup)) {
+      if (length(input$checkGroup) == 1) {
+          if(as.numeric(input$checkGroup) == 1) {
+            p = ggplot(data = df_city, aes(x = Date, y = Positive)) + geom_area(fill =
+                                                                              "#F08080") +
+            scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
+            labs(title = "COVID-19 Trend in Shanghai City 2022",
+               y = "Positive") +
+            theme_classic()
+          }
+      
+          else if (as.numeric(input$checkGroup) == 2) {
+            p = ggplot(data = df_city, aes(x = Date, y = Asymptomatic)) +
+              geom_area(fill = "#FFAFCC") +
+            labs(title = "COVID-19 Trend in Shanghai City 2022",
+               y = "Asymptomatic") +
+            scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
+            theme_classic()
+          }
+      }
+      else  {
+        p = ggplot(data = df_city, aes(x = Date, y = Asymptomatic)) +
+          geom_area(fill = "#FFAFCC") +
+          labs(title = "COVID-19 Trend in Shanghai City 2022",
+               y = "Asymptomatic") +
+          theme_classic()
+        p = p + geom_area(data = df_city, aes(x = Date, y = Positive), fill =
+                            "#F08080") +
+          scale_x_date(limits = as.Date(c('2022-03-01', '2022-04-13'))) +
+          labs(y = "Total")
+      }
     }
     else {
       
@@ -261,12 +347,34 @@ server <- function(input, output, session){
     
   }) 
   
-  output$plot2 = renderPlotly({
+  output$plot1.2 = renderPlotly({
+    data_city = df_city%>%
+      mutate(Asymptomatic_to_Positive_Rate = as.numeric(Asymptomatic_to_Positive)/as.numeric(Asymptomatic))%>%
+      mutate(Death_Rate = as.numeric(Deaths)/as.numeric(Total))%>%
+      filter(!is.na(Asymptomatic_to_Positive_Rate))%>%
+      filter(!is.na(Death_Rate))
     
-    
+    p = ggplot(data = data_city, mapping = aes(x = Date, y = Asymptomatic_to_Positive_Rate))+
+      geom_line(color = "#FFAFCC")+
+      theme_classic()
+    p = p + geom_line(data = data_city, aes(x = Date, y = Death_Rate), color = "#F08080")+
+      labs(title = "Asymptomatic to Positive/Death Rates",
+           y = "Rates")
+    ggplotly(p)
   })
   
-  output$plot3 = renderPlotly({
+  output$plot1.3 = renderPlotly({
+    
+    p = ggplot(data = df_city, mapping = aes(x = Date, y = Asymptomatic_to_Positive))+
+      geom_line(color = "#FFAFCC")+
+      theme_classic()
+    p = p + geom_line(data = df_city, aes(x = Date, y = Deaths), color = "#F08080")+
+      labs(title = "Asymptomatic to Positive/Death",
+           y = "Counts")
+    ggplotly(p)
+  })
+  
+  output$plot2 = renderPlotly({
     pos=df_district %>%
       filter(df_district$Districts == input$select) %>%
       ggplot(mapping = aes(x=Date, y=Positive))+
@@ -279,6 +387,10 @@ server <- function(input, output, session){
             panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
             panel.background = element_blank())
     ggplotly(pos)
+    
+  })
+  
+  output$plot3 = renderPlotly({
     
   })
   
@@ -448,3 +560,4 @@ server <- function(input, output, session){
 }
 
 shinyApp(ui = ui, server = server)
+
