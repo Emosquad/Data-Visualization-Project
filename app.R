@@ -11,15 +11,17 @@ library(plotly)
 library(DT)
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Shanghai COVID-19 Lockdown in 2022"),
-  dashboardSidebar(sidebarMenu(
-    width = 350,
-    menuItem("Overview",tabName="intro",icon = icon("info")),
+  dashboardHeader(title = "Shanghai COVID-19 Lockdown in 2022",titleWidth = 280),
+  dashboardSidebar(width=280,sidebarMenu(
+    width = 280,
+    menuItem("Overview",tabName="intro",icon = icon("info-circle")),
     menuItem("COVID-19 Trend", tabName = "page1", icon = icon("chart-area")),
     menuItem("Statistics", icon = icon("server"),
              menuSubItem("Trend by Districts", tabName = "page2"),
              menuSubItem("Asympotomatic Trend by Districts", tabName = "page3")),
-    menuItem("Map of Test Positive", tabName = "page4", icon = icon("globe")),
+    menuItem("Maps", icon = icon("globe"),
+             menuSubItem("Dot Map", tabName = "page4"),
+             menuSubItem("Interactive Map", tabName = "page8")),
     menuItem("Data", icon = icon("database"),
              menuSubItem("Data of City", tabName = "page5"),
              menuSubItem("Data of Districts", tabName = "page6"),
@@ -31,49 +33,56 @@ ui <- dashboardPage(
               fluidRow(
                 column(width = 12,
                        box(
-                         title = "Introduction of Emo Squad project", width = NULL, solidHeader=TRUE, status = "primary",align="center",
-                         HTML('<center><img src="shanghai.jpg" width = "800"></center>')),
-                       box(
-                         title = "New Omicron Variant Found in China, Shanghai Carries Out New Rounds of Covid-19 Testing", width = NULL, solidHeader=TRUE, status = "primary",align="center",
+                         title = "New Omicron Variant Found in China, Shanghai Carries Out New Rounds of Covid-19 Testing", width = NULL, status="primary",solidHeader=TRUE,collapsible = TRUE,align="center",
                          HTML(
                            '<iframe width="65%" height="300"
                   src="https://www.youtube.com/embed/nmIJXUV8WCw"
                   frameborder="0" allowfullscreen></iframe>'
                          )),
                        box(
-                         title= "Motivation", width = NULL, solidHeader=TRUE,  status = "primary",
-                         "Since the first discovery of the Covid-19 in 2019, there have been many mutations. 
-                         The Omicron variant has the characteristics of a relatively hidden transmission path, 
-                         a long, incubation period, and a high asymptomatic infection rate. Since March 2022, 
+                         title= "Introduction", width = NULL, solidHeader=TRUE,status = "primary",collapsible = TRUE,
+                         div(img(src="SH1.jpg",height=250,width=450), style="text-align: center;"),br(),
+                         tags$div("Since the first discovery of the Covid-19 in 2019, there have been many mutations. 
+                         The Omicron variant has the characteristics of a ",tags$strong("relatively hidden transmission path, 
+                         a long incubation period, and a high asymptomatic infection rate"),". Since March 2022, 
                          the Omicron variant has been on the rise. As a mega city and the largest urban economy of China, 
                          Shanghai has severe and complicated forms of epidemic prevention and control and 
-                         experienced a two-month rigid lockdown from the beginning of April to the end of May. 
+                         experienced a ",tags$strong("two-month rigid lockdown"), "from the beginning of April to the end of May. 
                          The full-scale lockdown of Shanghai severely harmed the economy and strained the nerves 
-                         and affected livelihoods of its 25 million residents and eroded the public鈥檚 trust in authorities. 
+                         and affected livelihoods of its 25 million residents and eroded the public's trust in authorities. 
                          Moreover, it will have far-reaching economic and social costs. 
                          As the arrival of BA.5 coronavirus variants, Shanghai fears the second lockdown as 
                          Chinese government battles BA.5 outbreaks. Our Project aims to collect the specialized datasets of 
                          2022 Shanghai COVID pandemic and provides data support for understanding the epidemic situation, 
-                         controlling, and predicting the epidemic situation."
+                         controlling, and predicting the epidemic situation.",style = "font-size:15px")
+                         
+                         
                        ),
                        box(
                          title= "Data Source",
-                         width = NULL, solidHeader=TRUE, status="primary",
-                         "Our datasets are retrieved from Model Whale website and contain epidemic data based on city, districts and individuals.",br(),
+                         width = NULL, solidHeader=TRUE, status = "primary",collapsible = TRUE,
+                         tags$div("Our datasets are retrieved from",tags$strong("Model Whale"), "website and contain epidemic data based on city, districts and individuals.",style="font-size:15px"),br(),
                          
                          a("Navigate to Model Whale",href="https://www.heywhale.com/auth/login?redirect=%2Fmw%2Fworkspace%2Findex", targets="_blank")
                        ),
                        box(
                          title= "Main Content",
-                         width = NULL, solidHeader=TRUE, status="primary",
-                         "1. Covid-19 Trend: A plot of confirmed cases and asymptomatic cases trend based on the two-month data.",br(),
-                         "2. Statistics: A plot of confirmed cases and asymptomatic cases based on different districts.", br(),
-                         "3. Map of Test Positive: An interactive heat map of Covid cases distribution based on different locations in the map of Shanghai, 
-                         and visualization of severity of the covid situation based on colors.",br(),
-                         "4. Data: Raw datasets."
+                         width = NULL, solidHeader=TRUE, status = "primary",collapsible = TRUE,
+                         tags$span(tags$li(tags$strong("Covid-19 Trend:"),"A plot of confirmed cases and asymptomatic cases trend based on the two-month data."),br(),
+                                   tags$li(tags$strong("Statistics:"),"A plot of confirmed cases and asymptomatic cases based on different districts."), br(),
+                                   tags$li(tags$strong("Map of Test Positive:"), "An interactive heat map of Covid cases distribution based on different locations in the map of Shanghai, 
+                                  and visualization of severity of the covid situation based on colors."),br(),
+                                   tags$li(tags$strong("Data:"), "Raw datasets."),style="font-size:16px")
                        ),
-                       box(title= "Team",width=NULL, solidHeader=TRUE, status = "primary",
-                           "member1, member2, member3")
+                       box(title= "Team",width=NULL, solidHeader=TRUE, status = "primary",collapsible = TRUE,
+                           tags$div(tags$strong("Our team members are all from MSBA program at Carey Business School, Johns Hopkins University:"), style = "font-size:15px"),br(),
+                           tags$li(tags$strong("Member 1: Jialu Ni - jni15@jh.edu")),br(),
+                           tags$li(tags$strong("Member 2: Yifan Wu - wuyifan2017@gmail.com")),br(),
+                           tags$li(tags$strong("Member 3: Yijia Wu - wuyifan2017@gmail.com")),br(),
+                           tags$li(tags$strong("Member 4: Yiming Ding - yding56@jh.edu")),br(),
+                           tags$li(tags$strong("Member 5: Zihui Chen - zchen109@jh.edu")),br(),
+                           tags$div("Feel free to contact us via email if you have any concerns related to this web.", style = "font-size:15px")
+                       )
                 )
                 
                 
@@ -111,18 +120,16 @@ ui <- dashboardPage(
               ),
       ),
       tabItem(tabName = "page4",
-              splitLayout(
-                cellWidths = c("25%", "75%"),
-                checkboxInput("Agg", label = "Show Cumulative map", value = FALSE),
                 sliderInput(
-                  "date",
+                  "date1",
                   "Date:",
                   min = as.Date("2022/03/06", "%Y/%m/%d"),
                   max = as.Date("2022/05/31", "%Y/%m/%d"),
                   value = as.Date("2022/03/06", "%Y/%m/%d"),
                   step = 1,
                   animate = animationOptions(interval = 2000, loop = FALSE)
-                )),
+                ),
+                checkboxInput("Agg", label = "Show Cumulative map", value = FALSE),
                 leafletOutput("myMap", width = "100%")
               ), 
       tabItem(tabName = "page5",
@@ -133,6 +140,19 @@ ui <- dashboardPage(
       ),
       tabItem(tabName = "page7",
               dataTableOutput("myTable3")
+      ),
+      tabItem(tabName = "page8",
+              sliderInput(
+                "date2",
+                "Date:",
+                min = as.Date("2022/03/06", "%Y/%m/%d"),
+                max = as.Date("2022/05/31", "%Y/%m/%d"),
+                value = as.Date("2022/03/06", "%Y/%m/%d"),
+                step = 1,
+                animate = animationOptions(interval = 2000, loop = FALSE)
+              ),
+              checkboxInput("Agg", label = "Show Cumulative map", value = FALSE),
+              leafletOutput("myMap2", width = "100%")
       )
       
     )
@@ -265,7 +285,7 @@ server <- function(input, output, session){
   output$myMap = renderLeaflet({
     if(input$Agg == TRUE) {
       loc_data = df_ind %>%
-        filter(as.Date(Date, '%Y-%m-%d') <= input$date) %>%
+        filter(as.Date(Date, '%Y-%m-%d') <= input$date1) %>%
         na.omit() %>%
         group_by(lng = round(Longtitude, 3), lat = round(Latitude, 3)) %>%
         summarise(N = n()) %>%
@@ -285,12 +305,12 @@ server <- function(input, output, session){
           lng2 =  loc_data$lngH,
           lat2 =  loc_data$latH,
           fillOpacity = loc_data$N / 150,
-          fillColor = "red",
+          color = "blue",
           label = loc_data$N
         )
     }else {
       loc_data = df_ind %>%
-        filter(as.Date(Date, '%Y-%m-%d') == input$date) %>%
+        filter(as.Date(Date, '%Y-%m-%d') == input$date1) %>%
         na.omit() %>%
         group_by(lng = round(Longtitude, 3), lat = round(Latitude, 3)) %>%
         summarise(N = n()) %>%
@@ -329,7 +349,102 @@ server <- function(input, output, session){
     return(datatable(df_ind, rownames= FALSE))
   })
   
-
+  output$myMap2 = renderLeaflet(
+    {
+      if(input$Agg == TRUE) {
+        loc_data = df_ind %>%
+          filter(as.Date(Date, '%Y-%m-%d') <= input$date2) %>%
+          na.omit()
+        
+        m = m = loc_data %>% leaflet() %>% addTiles() %>%
+          setView(121.5, 31.2, zoom = 10) %>%
+          addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+          addLayersControl(baseGroups = c("Toner", "OSM"),
+                           options = layersControlOptions(collapsed = FALSE)) %>%
+          addMarkers(
+            lng =  ~ Longtitude,
+            lat =  ~ Latitude,
+            popup = ~paste0(
+              "Date: ",  ~Date, br(),
+              "Address: ", ~Address, br(),
+              "Longtitude: ", ~longtitude, br(),
+              "Latitude: ", ~latitude
+            ),
+            clusterOptions = markerClusterOptions()
+          )
+      }else {
+        loc_data = df_ind %>%
+          filter(as.Date(Date, '%Y-%m-%d') == input$date2) %>%
+          na.omit()
+        
+        m = loc_data %>% leaflet() %>% addTiles() %>%
+          setView(121.5, 31.2, zoom = 10) %>%
+          addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+          addLayersControl(baseGroups = c("Toner", "OSM"),
+                           options = layersControlOptions(collapsed = FALSE))%>%
+          addMarkers(
+            lng =  loc_data$Longtitude,
+            lat =  loc_data$Latitude,
+            popup = ~paste0(
+              "Date: ",  loc_data$Date, br(),
+              "Address: ", loc_data$Address, br(),
+              "Longtitude: ", loc_data$Longtitude, br(),
+              "Latitude: ", loc_data$Latitude
+            ),
+            clusterOptions = markerClusterOptions()
+          )
+      }
+    }
+  )
+  
+  output$myMap3 = renderLeaflet(
+    {
+      if(input$Agg == TRUE) {
+        loc_data = df_ind %>%
+          filter(as.Date(Date, '%Y-%m-%d') <= input$date2) %>%
+          na.omit()
+        
+        m = m = loc_data %>% leaflet() %>% addTiles() %>%
+          setView(121.5, 31.2, zoom = 10) %>%
+          addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+          addLayersControl(baseGroups = c("Toner", "OSM"),
+                           options = layersControlOptions(collapsed = FALSE)) %>%
+          addMarkers(
+            lng =  ~ Longtitude,
+            lat =  ~ Latitude,
+            popup = ~paste0(
+              "Date: ",  ~Date, br(),
+              "Address: ", ~Address, br(),
+              "Longtitude: ", ~longtitude, br(),
+              "Latitude: ", ~latitude
+            ),
+            clusterOptions = markerClusterOptions()
+          )
+      }else {
+        loc_data = df_ind %>%
+          filter(as.Date(Date, '%Y-%m-%d') == input$date2) %>%
+          na.omit()
+        
+        m = loc_data %>% leaflet() %>% addTiles() %>%
+          setView(121.5, 31.2, zoom = 10) %>%
+          addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+          addLayersControl(baseGroups = c("Toner", "OSM"),
+                           options = layersControlOptions(collapsed = FALSE))%>%
+          addMarkers(
+            lng =  loc_data$Longtitude,
+            lat =  loc_data$Latitude,
+            popup = ~paste0(
+              "Date: ",  loc_data$Date, br(),
+              "Address: ", loc_data$Address, br(),
+              "Longtitude: ", loc_data$Longtitude, br(),
+              "Latitude: ", loc_data$Latitude
+            ),
+            clusterOptions = markerClusterOptions()
+          )
+      }
+    }
+  )
+  
 }
 
 shinyApp(ui = ui, server = server)
