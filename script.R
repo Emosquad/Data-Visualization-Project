@@ -29,6 +29,21 @@ for (s in 2:124) {
   df_city <- dplyr::bind_rows(df_city, df_seperate)
 }
 df_city[is.na(df_city)] = 0
+colnames(df_city) <-
+  c('Date',
+    'Total',
+    'Positive',
+    'Asymptomatic',
+    'Asymptomatic_to_Positive',
+    'Deaths')
+
+df_city$Date = as.Date(df_city$Date)
+p = ggplot(data = df_city,mapping = aes(x = Deaths, y = Date))+
+    geom_boxplot()+
+    theme_classic()
+p = p + geom_boxplot(data = df_city, mapping = aes(x = Positive, y = Date))
+p = p + geom_boxplot(data = df_city, mapping = aes(x = Asymptomatic, y = Date))
+ggplotly(p)
 
 # District data set
 file_name = paste0(path,date_str[20],"_dis.xlsx")
@@ -39,26 +54,50 @@ for (s in 21:124) {
   df_district <- dplyr::bind_rows(df_district, df_seperate)
 }
 df_district[is.na(df_district)] = 0
+colnames(df_district) <-
+  c('Districts', 'Positive', 'Asymptomatic', 'Date')
+c=df_district%>%
+  select(Positive,Districts,Asymptomatic)%>%
+  group_by(Districts)%>%
+  summarise(posavg = mean(Positive),poscount=sum(Positive),poshigh=max(Positive),asyavg = mean(Asymptomatic), asycount=sum(Asymptomatic),asyhigh=max(Asymptomatic))
+c$posavg=round(c$posavg,1)
+c$asyavg=round(c$asyavg,1)
+
+c_top= c%>% arrange(desc(poscount))%>% dplyr::select( Districts ) %>%
+  as.matrix() %>%
+  as.character
+
+c_plot = df_district %>% filter(Districts %in% c_top) %>% mutate(Districts = factor(Districts, levels = c_top)) %>%
+  arrange(Districts)
+
+c_top_a = c %>% arrange(desc(asycount)) %>%
+  dplyr::select(Districts) %>%
+  as.matrix() %>%
+  as.character
+
+c_plot_a = df_district %>% filter(Districts %in% c_top_a) %>%
+  mutate(Districts = factor(Districts, levels = c_top_a)) %>%
+  arrange(Districts)
 
 # Individual data set
 path = "./community/"
 file_name = paste0(path,date_str[8],"_geo.xlsx")
 df_ind <- read_xlsx(file_name)
-df_ind$性别 <- NULL
-df_ind$年龄 <- NULL
-df_ind$类型 <- NULL
+df_ind$?员? <- NULL
+df_ind$???? <- NULL
+df_ind$???? <- NULL
 df_ind = df_ind %>%
-  mutate(经度 = as.numeric(经度)) %>%
-  mutate(纬度 = as.numeric(纬度))
+  mutate(???? = as.numeric(????)) %>%
+  mutate(纬?? = as.numeric(纬??))
 for (s in 8:94) {
   file_name = paste0(path,date_str[s],"_geo.xlsx")
   df_seperate = read_xlsx(file_name)
-  df_seperate$性别 <- NULL
-  df_seperate$年龄 <- NULL
-  df_seperate$类型 <- NULL
+  df_seperate$?员? <- NULL
+  df_seperate$???? <- NULL
+  df_seperate$???? <- NULL
   df_seperate = df_seperate %>%
-    mutate(经度 = as.numeric(经度)) %>%
-    mutate(纬度 = as.numeric(纬度))
+    mutate(???? = as.numeric(????)) %>%
+    mutate(纬?? = as.numeric(纬??))
   df_ind <- dplyr::bind_rows(df_ind, df_seperate)
 }
 
