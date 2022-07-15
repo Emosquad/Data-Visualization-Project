@@ -597,7 +597,7 @@ server <- function(input, output, session) {
       geom_line(color = "#FFAFCC") +
       theme_classic()
     p = p + geom_line(data = df_city, aes(x = Date, y = Deaths), color = "#F08080") +
-      labs(title = "Asymptomatic to Positive/Death",
+      labs(title = "Asymptomatic to Positive/Death Counts",
            y = "Counts")
     ggplotly(p)
   })
