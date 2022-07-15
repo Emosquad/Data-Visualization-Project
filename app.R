@@ -423,7 +423,7 @@ ui <- dashboardPage(
           step = 1,
           animate = animationOptions(interval = 2000, loop = FALSE)
         ),
-        checkboxInput("Agg", label = "Show Cumulative map", value = FALSE),
+        checkboxInput("Agg2", label = "Show Cumulative map", value = FALSE),
         leafletOutput("myMap2", width = "100%")
       )
       
@@ -835,31 +835,31 @@ server <- function(input, output, session) {
   })
   
   output$myMap2 = renderLeaflet({
-    if (input$Agg == TRUE) {
+    if (input$Agg2 == TRUE) {
       loc_data = df_ind %>%
         filter(as.Date(Date, '%Y-%m-%d') <= input$date2) %>%
         na.omit()
       
-      m = m = loc_data %>% leaflet() %>% addTiles() %>%
+      m = loc_data %>% leaflet() %>% addTiles() %>%
         setView(121.5, 31.2, zoom = 10) %>%
         addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
         addLayersControl(baseGroups = c("Toner", "OSM"),
                          options = layersControlOptions(collapsed = FALSE)) %>%
         addMarkers(
-          lng =  ~ Longtitude,
-          lat =  ~ Latitude,
+          lng =  loc_data$Longtitude,
+          lat =  loc_data$Latitude,
           popup = ~ paste0(
             "Date: ",
-            ~ Date,
+            loc_data$Date,
             br(),
             "Address: ",
-            ~ Address,
+            loc_data$Address,
             br(),
             "Longtitude: ",
-            ~ longtitude,
+            loc_data$Longtitude,
             br(),
             "Latitude: ",
-            ~ latitude
+            loc_data$Latitude
           ),
           clusterOptions = markerClusterOptions()
         )
