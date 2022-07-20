@@ -343,7 +343,20 @@ ui <- dashboardPage(
             width = 12,
             collapsible = TRUE,
             collapsed = TRUE,
-            h5("#######")
+            h5(tags$span(
+              tags$li(
+                "In the positive trend of districts, we can see that the number of infection starts to soar from 28.Mar, and the first
+                 peak comes in around 15th Apr. Then it eased back for 2 weeks and then soar again, arrives the second peak in Apr. 28, from which
+                 the number of positive infection declines gradually to 0."
+              ),
+              tags$li(
+                "In the Asymptomatic trend of districts, we can see that the number of infection starts to soar from 28.Mar, and the most of the
+                districts arrive their first peak in around 9th Apr. Then it eased back for 2 weeks and then soar again, arrives the second peak in Apr. 20, from which
+                 the number of positive infection declines gradually to 0. It is worth mentioned PuDong, MinHang and Xuhui as the districts that has the 
+                most infections, they arrived their peak earlier in around 13th Apr."
+              ),
+              style = "font-size:15px"
+            ))
           )
         ),
         fluidRow(column(
@@ -387,7 +400,16 @@ ui <- dashboardPage(
             width = 12,
             collapsible = TRUE,
             collapsed = TRUE,
-            h5("#######")
+            h5(tags$span(
+              tags$li(
+                "In both total number of infection and average number of infections chart, they have the same distribution.  However, number of infections among districts are quite different.
+                  For example, total number of Asypmtomatic are from 1316 to 210282, such a difference requires the government to distribute the resources effectively and avoid misallocation."
+              ),
+              tags$li(
+                "Pudong(浦东) district has the most Positive and Asypmtomatic infection and occupies for around 40% of the total Infections among 16 districts."
+              ),
+              style = "font-size:15px"
+            ))
           )
         )
         
